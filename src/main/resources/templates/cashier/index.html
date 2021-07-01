@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" 
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+      body {
+        background-image: url('/images/aa.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;  
+        background-size: 100%;
+      }
+    </style>
+  </head>
+  <body class="body">
+    <div class="topnav">
+      <div class="d-flex justify-content-between">
+        <div>
+          <a href='#'>Cashier Page</a>
+          <a href='#'>[[${user}]]</a>
+          <span th:if="${status} == admin">
+            <a th:href="@{/liquorshop/owner-homepage}" class="btn btn-dark btn-sm mn-3">Back</a>
+          </span>
+        </div>
+        <div>
+          <a href='/logout'>LogOut</a>
+        </div>
+      </div>
+    </div>
+    <div class="container left cashier-top">
+      <a th:href="@{/liquorshop/cashier-homepage/create_new_sale}" class="btn btn-dark btn-lg mn-3">Sale</a>
+      <a th:href="@{/liquorshop/cashier-homepage/sale_history_list}" class="btn btn-dark btn-lg mn-3">Sale History</a><br><br>
+    </div>
+  </body>
+</html>

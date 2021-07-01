@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" 
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <title>User</title>
+  </head>
+  <body>
+    <div class="topnav">
+      <div class="d-flex justify-content-between">
+        <div>
+          <a href='/liquorshop/owner-homepage'>Liquor Shop Management</a>
+          <a href='#'>[[${user}]]</a>
+        </div>
+        <div>
+          <a href='/logout'>LogOut</a>
+        </div>
+      </div>
+    </div>
+    <div class="row left pt-3">
+      <div class="col-lg-7 pt-5">
+        <div><h2>Create New Product</h2></div><br>
+        <div th:if="${alreadyexist}" class="alert alert-danger">[[${alreadyexist}]]<br></div>
+        <div th:if="${success}" class="alert alert-success">[[${success}]]<br></div>
+        <form method="post" th:action="@{/liquorshop/owner-homepage/new_product/save}" th:object="${product}" novalidate>
+          <div>
+              <label for="product_name" th:text="#{product_name}"></label><br>
+              <input type="text" th:field="*{product_name}" class="form-control" th:errorclass="is-invalid" placeholder="product name">
+              <div class="invalid-feedback"
+                th:errors="*{product_name}">
+              </div>
+          </div>
+          <div>
+              <label for="price" th:text="#{price}"></label><br>
+              <input type="number" th:field="*{price}" class="form-control" th:errorclass="is-invalid" placeholder="price">
+              <div class="invalid-feedback"
+                th:errors="*{price}">
+              </div>
+          </div>
+          <div>
+            <label for="product_category" th:text="#{category}"></label><br>
+            <select name="product_category" id="product_category">
+              <option value="whisky">Whisky</option>
+              <option value="beer">Beer</option>
+              <option value="wine">Wine</option>
+            </select>
+            <div class="invalid-feedback"
+              th:errors="*{product_category}">
+            </div>
+          </div>
+          <div>
+            <label for="product_type" th:text="#{type}"></label><br>
+            <select name="product_type" id="product_type">
+              <option value="bottle">Bottle</option>
+              <option value="can">Can</option>
+            </select>
+            <div class="invalid-feedback"
+              th:errors="*{product_type}">
+            </div>
+          </div>
+          <br>
+          <div class="text-center">
+            <button class="btn btn-dark" type="submit" >
+              Create Product
+            </button>
+          </div>
+        </form><br>
+        <div class="row">
+            <div class="col-lg-3">
+                <a th:href="@{/liquorshop/owner-homepage/product_list}" class="btn btn-dark btn-sm mn-3">Back</a>
+            </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

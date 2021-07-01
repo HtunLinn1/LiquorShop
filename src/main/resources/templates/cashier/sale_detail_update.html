@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="stylesheet" 
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<title>Sale Detail Update</title>
+</head>
+<body>
+  <div class="topnav">
+    <div class="d-flex justify-content-between">
+      <div>
+        <a href='/liquorshop/cashier-homepage'>Cashier Page</a>
+        <a href='#'>[[${user}]]</a>
+      </div>
+      <div>
+        <a href='/logout'>LogOut</a>
+      </div>
+    </div>
+  </div><br>
+  <div class="container detail-update-left pt-5">
+    <div class="col-lg-10 card-header">
+      <h3>Sale Detail Update</h3>
+      <form th:method="patch" th:action="@{/liquorshop/cashier-homepage/sale_history/{sale_id}/detail/{detail_id}/detail_update(sale_id=${sale_id}, detail_id=${detail_id})}" th:object="${saleDetail}" novalidate>
+        <div>
+          <label for="product_name" th:text="#{product_name}"></label><br>
+          <select name="product_name" id="product_name" onchange="showProduct()">
+            <option th:each="product: ${products}" th:text="${product.product_name}" th:value="${product.product_name} + ',' + ${product.product_category} + ',' + ${product.product_type} + ',' + ${product.price}" th:selected="${product.product_name==saleDetail.product.product_name}" />
+          </select>
+          <div class="invalid-feedback"
+            th:errors="*{product.product_name}">
+          </div>
+        </div>
+        <span>[[${saleDetail.product.product_name}]]</span>
+        <div>
+          <label for="price" th:text="#{price}"></label><br>
+          <input type="number" th:field="*{product.price}" id="price" class="form-control" th:errorclass="is-invalid" disabled>
+          <div class="invalid-feedback err-color"
+            th:errors="*{product.price}">
+          </div>
+        </div>
+        <div>
+          <label for="product_category" th:text="#{category}"></label><br>
+            <select name="product_category" id="category" disabled>
+              <option value="whisky" th:if="*{product.product_category} == whisky" selected>Whisky</option>
+              <option value="beer" th:if="*{product.product_category} == beer" selected>Beer</option>
+              <option value="wine" th:if="*{product.product_category} == wine" selected>Wine</option>
+              <option value="whisky">Whisky</option>
+              <option value="beer">Beer</option>
+              <option value="wine">Wine</option>
+            </select>
+          <div class="invalid-feedback err-color"
+            th:errors="*{product.product_category}">
+          </div>
+        </div>
+        <div>
+          <label for="product_type" th:text="#{type}"></label><br>
+            <select name="product_type" id="type" disabled>
+              <option value="can" th:if="*{product.product_type} == can" selected>Can</option>
+              <option value="bottle" th:if="*{product.product_type} == bottle" selected>Bottle</option>
+              <option value="can">Can</option>
+              <option value="bottle">Bottle</option>
+            </select>
+          <div class="invalid-feedback err-color"
+            th:errors="*{product.product_type}">
+          </div>
+        </div>
+        <div>
+          <label for="quantity" th:text="#{quantity}"></label><br>
+          <input type="number" th:field="*{quantity}" class="form-control" th:errorclass="is-invalid" id="quantity" onchange='changeValue();'>
+          <div class="invalid-feedback err-color"
+            th:errors="*{quantity}">
+          </div>
+        </div>
+        <div>
+          <input type="hidden" th:field="*{total_amount}" class="form-control" th:errorclass="is-invalid" >
+        </div>
+        <div>
+          <input type="hidden" th:field="*{sale}" class="form-control" th:errorclass="is-invalid" >
+        </div><br>
+        
+        <button class="btn btn-dark" type="submit" >
+          Update
+        </button>
+      </form><br>
+      <div class="row">
+        <div class="col-lg-3">
+          <a th:href="@{/liquorshop/cashier-homepage/sale_history/{id}/detail(id=${sale_id})}" class="btn btn-dark btn-sm mn-3">Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+<script type="text/javascript">
+  function showProduct(){
+    var testArr = document.getElementById("product_name").value.split(',');
+
+    document.getElementById("category").value = testArr[1];
+    document.getElementById("type").value = testArr[2];
+    document.getElementById("price").value = testArr[3];
+  };
+
+  function changeValue(){
+    if (document.getElementById("quantity").value === "" || document.getElementById("category").value < 0) {
+      alert("Insert quantity that is greater than 0!");
+    }
+  }
+</script>

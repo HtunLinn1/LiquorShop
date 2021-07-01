@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="stylesheet" 
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<title>User Update</title>
+</head>
+<body>
+  <div class="topnav">
+    <div class="d-flex justify-content-between">
+      <div>
+        <a href='/liquorshop/owner-homepage'>Liquor Shop Management</a>
+        <a href='#'>[[${user}]]</a>
+      </div>
+      <div>
+        <a href='/logout'>LogOut</a>
+      </div>
+    </div>
+  </div><br>
+  <div class="container detail-update-left pt-5">
+    <div class="col-lg-10 card-header">
+      <h3>Product Update</h3>
+      <form th:method="patch" th:action="@{/liquorshop/owner-homepage/user_list/{id}/edit(id=${appUser.id})}" th:object="${appUser}" novalidate>
+        <div>
+          <label for="username" th:text="#{user_name}"></label><br>
+            <input type="text" th:field="*{username}" class="form-control" th:errorclass="is-invalid" >
+          <div class="invalid-feedback"
+            th:errors="*{username}">
+          </div>
+        </div>
+        <div>
+          <label for="email" th:text="#{email}"></label><br>
+          <input type="email" th:field="*{email}" class="form-control" th:errorclass="is-invalid" >
+          <div class="invalid-feedback err-color"
+            th:errors="*{email}">
+          </div>
+        </div>
+        <div>
+          <label for="password" th:text="#{password}"></label><br>
+          <input type="password" th:field="*{password}" class="form-control" th:errorclass="is-invalid" >
+          <div class="invalid-feedback err-color"
+            th:errors="*{password}">
+          </div>
+        </div>
+        <div>
+          <label for="status" th:text="#{status}"></label><br>
+            <select name="status" id="status">
+              <option value="admin" th:if="*{status} == admin" selected>Admin</option>
+              <option value="cashier" th:if="*{status} == cashier" selected>Cashier</option>
+              <option value="admin">Admin</option>
+              <option value="cashier">Cashier</option>
+            </select>
+          <div class="invalid-feedback err-color"
+            th:errors="*{status}">
+          </div>
+        </div><br>
+        
+        <button class="btn btn-dark" type="submit" >
+          Update
+        </button>
+      </form><br>
+      <div class="row">
+        <div class="col-lg-3">
+          <a th:href="@{/liquorshop/owner-homepage/user_list}" class="btn btn-dark btn-sm mn-3">Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

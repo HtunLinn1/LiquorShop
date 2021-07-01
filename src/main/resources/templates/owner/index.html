@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" 
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+      body {
+        background-image: url('/images/whisky1.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;  
+        background-size: 100%;
+      }
+    </style>
+  </head>
+  <body class="body">
+    <div class="topnav">
+      <div class="d-flex justify-content-between">
+        <div>
+          <a href='#'>Liquor Shop Management</a>
+          <a href='#'>[[${user}]]</a>
+          <a href='/liquorshop/owner-homepage/user_list'>User List</a>
+        </div>
+        <div>
+          <a href='/logout'>LogOut</a>
+        </div>
+      </div>
+    </div>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]<br></div>
+    <div class="container text-center cashier-top">
+      <a th:href="@{/liquorshop/owner-homepage/create_new_purchase}" class="btn btn-dark btn-lg mn-3">Purchase</a>
+      <a th:href="@{/liquorshop/owner-homepage/purchase_history_list}" class="btn btn-dark btn-lg mn-3">Purchase History</a>
+      <a th:href="@{/liquorshop/owner-homepage/product_list}" class="btn btn-dark btn-lg mn-3">Product List</a>
+      <a th:href="@{/liquorshop/cashier-homepage}" class="btn btn-dark btn-lg mn-3">Sale</a>
+    </div>
+  </body>
+</html>

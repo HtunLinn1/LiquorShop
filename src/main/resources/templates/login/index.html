@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" 
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <title>Liquor Shop</title>
+  <style>
+    body {
+      background-image: url('/images/login-image.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;  
+      background-size: cover;
+    }
+  </style>
+</head> 
+<body class="body pt-5">
+  <div th:fragment="main" class="container text-center">
+    <div class="card-header">
+      <div class="alert alert-danger" th:if="${param.error}">
+          ユーザー名／パスワードが正しくありません。
+      </div>
+      <div>
+        <form method="post" th:action="@{/liquorshop}">
+          <div><h2>Liquor Shop</h2></div>
+          <div>
+              <label for="usr" class="login-text">User Name : </label><br>
+              <input id="username" name="usr" type="text">
+          </div>
+          <div>
+              <label for="passwd" class="login-text">Password : </label><br>
+              <input id="passwd" name="passwd" type="password">
+          </div><br>
+          <input type="submit" value="login">
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

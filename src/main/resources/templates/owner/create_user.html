@@ -1,0 +1,70 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" 
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <title>Create User</title>
+  </head>
+  <body>
+    <div class="topnav">
+      <div class="d-flex justify-content-between">
+        <div>
+          <a href='/liquorshop/owner-homepage'>Liquor Shop Management</a>
+          <a href='#'>[[${user}]]</a>
+        </div>
+        <div>
+          <a href='/logout'>LogOut</a>
+        </div>
+      </div>
+    </div>
+    <div class="row user-left card-header pt-3">
+      <div class="col-lg-25">
+        <div class="pt-5"><h2>Create User</h2></div>
+        <div th:if="${alreadyexist}" class="alert alert-danger">[[${alreadyexist}]]<br></div>
+        <form method="post" th:action="@{/liquorshop/owner-homepage/create_user}" th:object="${appUser}" novalidate>
+          <div>
+              <label for="user_name" th:text="#{user_name}"></label><br>
+                <input type="text" th:field="*{username}" class="form-control" th:errorclass="is-invalid" placeholder="username" >
+              <div class="invalid-feedback"
+                th:errors="*{username}">
+              </div>
+          </div>
+          <div>
+              <label for="email" th:text="#{email}"></label><br>
+              <input type="email" th:field="*{email}" class="form-control" th:errorclass="is-invalid" placeholder="email">
+              <div class="invalid-feedback"
+                th:errors="*{email}">
+              </div>
+          </div>
+          <div>
+              <label for="password" th:text="#{password}"></label><br>
+              <input type="password" th:field="*{password}" class="form-control" th:errorclass="is-invalid" placeholder="password">
+              <div class="invalid-feedback"
+                th:errors="*{password}">
+              </div>
+          </div>
+          <div>
+            <label for="status" th:text="#{status}"></label><br>
+            <select name="status">
+              <option value="admin">Admin</option>
+              <option value="cashier">Cashier</option>
+            </select>
+            <div class="invalid-feedback"
+              th:errors="*{status}">
+            </div>
+          </div>
+          <br>
+          <button class="btn btn-dark" type="submit" >
+            Create User
+          </button>
+        </form>
+        <div>
+            <a th:href="@{/liquorshop/owner-homepage/user_list}" class="btn btn-dark btn-sm mn-3">Back</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
