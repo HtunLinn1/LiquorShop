@@ -3,7 +3,6 @@ package jp.co.cybermisisons.itspj.java.demo.controllers;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +24,7 @@ import jp.co.cybermisisons.itspj.java.demo.models.AppUser;
 import jp.co.cybermisisons.itspj.java.demo.models.AppUserRepository;
 import jp.co.cybermisisons.itspj.java.demo.models.Product;
 import jp.co.cybermisisons.itspj.java.demo.models.ProductRepository;
+import jp.co.cybermisisons.itspj.java.demo.models.RemainingStockRepository;
 import jp.co.cybermisisons.itspj.java.demo.models.Sale;
 import jp.co.cybermisisons.itspj.java.demo.models.SaleDetail;
 import jp.co.cybermisisons.itspj.java.demo.models.SaleDetailRepository;
@@ -39,6 +40,7 @@ public class CashierController {
   private final ProductRepository productrep;
   private final SaleDetailRepository saledetailtrep;
   private final SaleRepository salerep;
+  private final RemainingStockRepository rsrep;
 
   @GetMapping("")
   public String homepage(Principal principal, Model model) {
@@ -52,6 +54,23 @@ public class CashierController {
     model.addAttribute("user", principal.getName());
 
     model.addAttribute("products", productrep.findAll());
+    List<Product> products = productrep.findAll();
+    System.out.println(rsrep.findByProductId(products.get(0).getId()));
+    model.addAttribute("rStock", rsrep.findByProductId(products.get(0).getId()));
+
+    return "cashier/create_new_sale";
+  }
+
+  @RequestMapping(value = "/createNewSaleWithProductId", method = RequestMethod.GET)
+  @ResponseBody
+  public String createNewSaleWithProductId(Principal principal, @RequestBody Product productObj, Model model) {
+    model.addAttribute("user", principal.getName());
+    model.addAttribute("products", productrep.findAll());
+
+    System.out.println(productObj.getId());
+    System.out.println(productObj.getProduct_name());
+    model.addAttribute("rStock", rsrep.findByProductId(productObj.getId()));
+    System.out.println(rsrep.findByProductId(productObj.getId()));
 
     return "cashier/create_new_sale";
   }
@@ -66,9 +85,6 @@ public class CashierController {
 
     List<Sale> sale_id = salerep.findTopByOrderByIdDesc();
     Sale sale = sale_id.get(0);
-    for (int i = 0; i < dataObj.size(); i++) {
-      Product product = productrep.findById(dataObj.get(i).getId()).get();
-    }
 
     for (int i = 0; i < dataObj.size(); i++) {
       saledetailtrep.insertSaleDetail( //
@@ -78,7 +94,10 @@ public class CashierController {
           productrep.findById(dataObj.get(i).getId()).get(), //
           sale //
       );
+
+      rsrep.updateMinusStockQuantity(dataObj.get(i).getQuantity(), dataObj.get(i).getId());
     }
+
     return "cashier/create_new_sale";
   }
 
@@ -135,12 +154,6 @@ public class CashierController {
   public String detail_update(@PathVariable int detail_id, @PathVariable int sale_id, RedirectAttributes attrs,
       @Validated @ModelAttribute SaleDetail saleDetail, BindingResult result, Model model) {
     if (result.hasErrors()) {
-      //
-      model.addAttribute("detail_id", detail_id);
-      model.addAttribute("sale_id", sale_id);
-
-      //
-
       model.addAttribute("products", productrep.findAll());
       return "cashier/sale_detail_update";
     }

@@ -26,14 +26,13 @@
       <form th:method="patch" th:action="@{/liquorshop/cashier-homepage/sale_history/{sale_id}/detail/{detail_id}/detail_update(sale_id=${sale_id}, detail_id=${detail_id})}" th:object="${saleDetail}" novalidate>
         <div>
           <label for="product_name" th:text="#{product_name}"></label><br>
-          <select name="product_name" id="product_name" onchange="showProduct()">
+          <select name="product_name" id="product_name" onchange="showProduct()" disabled>
             <option th:each="product: ${products}" th:text="${product.product_name}" th:value="${product.product_name} + ',' + ${product.product_category} + ',' + ${product.product_type} + ',' + ${product.price}" th:selected="${product.product_name==saleDetail.product.product_name}" />
           </select>
           <div class="invalid-feedback"
             th:errors="*{product.product_name}">
           </div>
         </div>
-        <span>[[${saleDetail.product.product_name}]]</span>
         <div>
           <label for="price" th:text="#{price}"></label><br>
           <input type="number" th:field="*{product.price}" id="price" class="form-control" th:errorclass="is-invalid" disabled>
@@ -76,6 +75,9 @@
         </div>
         <div>
           <input type="hidden" th:field="*{total_amount}" class="form-control" th:errorclass="is-invalid" >
+        </div>
+        <div>
+          <input type="hidden" th:field="*{final_total}" class="form-control" th:errorclass="is-invalid" >
         </div>
         <div>
           <input type="hidden" th:field="*{sale}" class="form-control" th:errorclass="is-invalid" >

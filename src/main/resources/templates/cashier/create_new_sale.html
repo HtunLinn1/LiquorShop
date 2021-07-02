@@ -65,6 +65,9 @@
             <div class="invalid-feedback"
               th:errors="*{quantity}">
             </div>
+            <div>
+              In Stock: [[${rStock.stock}]]
+            </div>
           </div>
 
           <div>
@@ -138,7 +141,23 @@
     document.getElementById("type").value = testArr[1];
     document.getElementById("price").value = testArr[2];
     document.getElementById("product_id").value = testArr[4];
-    console.log(document.getElementById("product_id").value);
+
+    var productObj = {};
+    productObj.id = testArr[4];
+    productObj.product_name = testArr[3];
+    console.log(productObj);
+    $.ajax({
+      contentType: "application/json; charset=utf-8",
+      type: "GET",
+      url: "createNewSaleWithProductId", 
+      dataType:"json",
+      data: JSON.stringify(productObj),
+      success: function (result) {
+      },
+      error: function (result) {
+          // do something.
+      }
+  });
   };
 
   function changeValue() {
@@ -190,7 +209,7 @@
         }
       }
       document.getElementById("price").value = 0;
-      document.getElementById("quantity").value = 1;
+      document.getElementById("quantity").value = 0;
       document.getElementById("total_amount").value = 0;
       document.getElementById("index").value = "";
 
@@ -250,7 +269,6 @@
     var dataObj = {};
     purchaseList[purchaseList.length - 1].final_total = finalTotal
     dataObj = purchaseList;
-    console.log(dataObj);
     $.ajax({
         contentType: "application/json; charset=utf-8",
         type: "POST",

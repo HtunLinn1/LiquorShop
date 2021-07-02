@@ -34,5 +34,28 @@
       <a th:href="@{/liquorshop/owner-homepage/product_list}" class="btn btn-dark btn-lg mn-3">Product List</a>
       <a th:href="@{/liquorshop/cashier-homepage}" class="btn btn-dark btn-lg mn-3">Sale</a>
     </div>
+    <div class="d-flex justify-content-between">
+      <div>
+        <div class="less-product"><h4>Less Products</h4></div>
+        <table class="table table-striped table-bordered table-bg">
+          <thead class="table-dark">
+          <tr>
+            <th>product_name</th>
+            <th>stock</th>
+          </tr>
+          </thead>
+          <tbody>
+              <tr th:each="rs : ${rStocks}">
+                <span th:if="${rs.stock} < 11">
+                <td>[[${rs.product.product_name}]]</td>
+                <td>[[${rs.stock}]]</td>
+                </span>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+      </div>
+    </div>
   </body>
 </html>

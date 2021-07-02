@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -47,5 +48,8 @@ public class Product {
 
   @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
   private List<SaleDetail> sale_details;
+
+  @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+  private RemainingStock remaining_stocks;
 
 }

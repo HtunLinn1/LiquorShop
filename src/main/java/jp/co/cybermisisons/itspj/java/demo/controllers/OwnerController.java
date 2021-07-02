@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import jp.co.cybermisisons.itspj.java.demo.models.AppUser;
 import jp.co.cybermisisons.itspj.java.demo.models.AppUserRepository;
 import jp.co.cybermisisons.itspj.java.demo.models.Product;
@@ -29,6 +30,8 @@ import jp.co.cybermisisons.itspj.java.demo.models.Purchase;
 import jp.co.cybermisisons.itspj.java.demo.models.PurchaseDetail;
 import jp.co.cybermisisons.itspj.java.demo.models.PurchaseDetailRepository;
 import jp.co.cybermisisons.itspj.java.demo.models.PurchaseRepository;
+import jp.co.cybermisisons.itspj.java.demo.models.RemainingStock;
+import jp.co.cybermisisons.itspj.java.demo.models.RemainingStockRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/liquorshop/owner-homepage")
@@ -40,10 +43,12 @@ public class OwnerController {
   private final ProductRepository productrep;
   private final PurchaseRepository purchaserep;
   private final PurchaseDetailRepository purchasedetailrep;
+  private final RemainingStockRepository rsrep;
 
   @GetMapping("")
   public String homepage(Principal principal, Model model) {
     model.addAttribute("user", principal.getName());
+    model.addAttribute("rStocks", rsrep.findAllByOrderByStockAsc());
     return "owner/index";
   }
 
@@ -60,8 +65,14 @@ public class OwnerController {
     if (result.hasErrors()) {
       return "owner/create_new_product";
     }
-    if (productrep.findProduct(product.getProduct_name()).isEmpty()) {
+    if (productrep.findProduct(product.getProduct_name()) == null) {
       productrep.save(product);
+
+      RemainingStock rs = new RemainingStock();
+      rs.setStock(0);
+      rs.setProduct(product);
+      rsrep.save(rs);
+
     } else {
       attrs.addFlashAttribute("alreadyexist", "Product already exists!");
       return "redirect:/liquorshop/owner-homepage/create_new_product";
@@ -101,7 +112,11 @@ public class OwnerController {
           dataObj.get(i).getFinal_total(), //
           purchase //
       );
+
+      rsrep.updateAddStockQuantity(dataObj.get(i).getQuantity(),
+          productrep.findProduct(dataObj.get(i).getProduct_name()).getId());
     }
+
     return "owner/create_new_purchase";
   }
 
@@ -121,6 +136,13 @@ public class OwnerController {
 
   @DeleteMapping("/purchase_history/{id}/delete")
   public String delete(@PathVariable int id, RedirectAttributes attrs) {
+    List<PurchaseDetail> del_purchaseDetails = purchasedetailrep.findByPurchase(purchaserep.findById(id));
+    System.out.println(del_purchaseDetails);
+    for (int i = 0; i < del_purchaseDetails.size(); i++) {
+      Integer quantity = del_purchaseDetails.get(i).getQuantity();
+      Integer product_id = productrep.findProduct(del_purchaseDetails.get(i).getProduct_name()).getId();
+      rsrep.updateMinusStockQuantity(quantity, product_id);
+    }
     purchaserep.deleteById(id);
     attrs.addFlashAttribute("success", "Successfully deleted!");
     return "redirect:/liquorshop/owner-homepage/purchase_history_list";
@@ -136,14 +158,11 @@ public class OwnerController {
 
   @DeleteMapping("/purchase_history/{purchase_id}/detail/{detail_id}/delete")
   public String detail_delete(@PathVariable int detail_id, @PathVariable int purchase_id, RedirectAttributes attrs) {
-    // Integer purchaseDetailTotal =
-    // purchasedetailrep.findById(detail_id).get().getTotal_amount();
-    // Integer purchaseTotal =
-    // purchaserep.findById(purchase_id).get().getFinal_total();
 
-    // Integer final_total = purchaseTotal - purchaseDetailTotal;
-    // purchaserep.updatePurchaseFinalTotal(final_total, purchase_id);
-
+    String product_name = purchasedetailrep.findById(detail_id).get().getProduct_name();
+    Integer quantity = purchasedetailrep.findById(detail_id).get().getQuantity();
+    Integer product_id = productrep.findProduct(product_name).getId();
+    rsrep.updateMinusStockQuantity(quantity, product_id);
     purchasedetailrep.deleteById(detail_id);
     attrs.addFlashAttribute("success", "Successfully deleted!");
     return "redirect:/liquorshop/owner-homepage/purchase_history/" + purchase_id + "/detail";
@@ -279,9 +298,6 @@ public class OwnerController {
       model.addAttribute("user", principal.getName());
       return "owner/user_list_update";
     }
-    System.out.println(appUser.getUsername());
-    System.out.println(appUser.getEmail());
-    System.out.println(appUser.getStatus());
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     String hashedPassword = passwordEncoder.encode(appUser.getPassword());
 
