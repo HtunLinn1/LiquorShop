@@ -61,3 +61,11 @@
   color: white;
 }
 
+.loss-color {
+  color: red;
+}
+
+.profit-color {
+  color: green;
+}
+

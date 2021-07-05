@@ -11,8 +11,8 @@
     body {
       background-image: url('/images/whisky2.jpg');
       background-repeat: no-repeat;
-      background-attachment: fixed;  
-      background-size: 100%;
+      background-attachment: fixed;
+      background-size: 30%;
     }
   </style>
   </head>
@@ -128,7 +128,7 @@
               id="button"
               onClick="savePurchaseList()"
             >
-            Save Purchase
+            Sale
             </button>
           </div><br>
           <div class="row">
@@ -143,7 +143,6 @@
 <script type="text/javascript">
   function showProduct(){
     var testArr = document.getElementById("product_name").value.split(',');
-
     document.getElementById("category").value = testArr[0];
     document.getElementById("type").value = testArr[1];
     document.getElementById("price").value = testArr[2];
@@ -178,8 +177,6 @@
     document.getElementById("final_total_amount").value = finalTotal;
 
     if (parseInt(quantity) > parseInt(stock)) {
-      console.log(stock);
-      console.log(quantity);
       alert("quantity is greater than current stock");
     } else if(parseInt(quantity) <= 0 || parseInt(price) < 0 || quantity === "" ) {
       alert("Enter quantity that is greater than 0 and price that is greater than -1!");
@@ -254,9 +251,10 @@
     var edit_price = purchaseList[index].price;
     var edit_quantity = purchaseList[index].quantity;
     var edit_totalAmout = purchaseList[index].total_amount;
-    var product_id = purchaseList[index].product_id;
+    var product_id = purchaseList[index].id;
     var stock = purchaseList[index].stock;
-
+    
+    console.log(edit_category + "," + edit_type + "," + edit_price + "," + edit_name + "," + product_id + "," + stock);
     document.getElementById("product_name").value = edit_category + "," + edit_type + "," + edit_price + "," + edit_name + "," + product_id + "," + stock;
     document.getElementById("price").value = edit_price;
     document.getElementById("category").value = edit_category;
@@ -264,6 +262,8 @@
     document.getElementById("quantity").value = edit_quantity;
     document.getElementById("total_amount").value = edit_totalAmout;
     document.getElementById("product_id").value = product_id;
+    document.getElementById("stock").value = stock;
+
 
     document.getElementById("index").value = index;
   };
@@ -292,7 +292,7 @@
     $('.purchaseTable tbody').html(bodyString);
 
     document.getElementById("final_total_amount").value = "";
-    alert("Purchase successfully created!");
+    alert("Sale successfully created!");
   }
     
 </script>

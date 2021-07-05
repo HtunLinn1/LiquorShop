@@ -7,8 +7,16 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" th:href="@{/css/style.css}">
   <title>Create Purchase</title>
+  <style>
+    body {
+      background-image: url('/images/whisky2.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;  
+      background-size: 30%;
+    }
+  </style>
   </head>
-  <body>
+  <body class="body">
     <div class="topnav">
       <div class="d-flex justify-content-between">
         <div>
@@ -26,9 +34,9 @@
         <form action="" th:object="${purchaseDetail}" novalidate>
           <div>
               <label for="product_name" th:text="#{product_name}"></label><br>
-              <select name="product_name" id="product_name">
+              <select name="product_name" id="product_name" onchange="showProduct()" >
                 <option value="" disabled selected hidden>Choose Product Name</option>
-                <option th:each="product: ${products}" th:value="${product.product_name}" th:text="${product.product_name}" />
+                <option th:each="product: ${products}" th:value="${product.product_name} + ',' + ${product.product_category} + ',' + ${product.product_type}" th:text="${product.product_name}" />
               </select>
               <div class="invalid-feedback"
                 th:errors="*{product_name}">
@@ -43,7 +51,7 @@
           </div>
           <div>
             <label for="product_category" th:text="#{category}"></label><br>
-            <select name="product_category" id="category">
+            <select name="product_category" id="category" disabled>
               <option value="whisky">Whisky</option>
               <option value="beer">Beer</option>
               <option value="wine">Wine</option>
@@ -54,7 +62,7 @@
           </div>
           <div>
             <label for="product_type" th:text="#{type}"></label><br>
-            <select name="product_type" id="type">
+            <select name="product_type" id="type" disabled>
               <option value="bottle">Bottle</option>
               <option value="can">Can</option>
             </select>
@@ -122,7 +130,7 @@
               id="button"
               onClick="savePurchaseList()"
             >
-            Save Purchase
+            Purchase
             </button>
           </div><br>
           <div class="row">
@@ -135,6 +143,14 @@
   </body>
 </html>
 <script type="text/javascript">
+  function showProduct(){
+    var testArr = document.getElementById("product_name").value.split(',');
+
+    document.getElementById("category").value = testArr[1];
+    document.getElementById("type").value = testArr[2];
+
+  };
+
   function changeValue() {
       var quantity = document.getElementById("quantity").value;
       var price = document.getElementById("price").value;
@@ -148,12 +164,15 @@
 
     var index = document.getElementById("index").value;
     document.getElementById("final_total_amount").value = finalTotal;
+
+    var testArr = document.getElementById("product_name").value.split(',');
+    var product_name = testArr[0];
     
     if (document.getElementById("quantity").value > 0 && document.getElementById("price").value > -1) {
 
       if (index === "") {
         purchaseList.push({
-                  "product_name": document.getElementById("product_name").value, 
+                  "product_name": product_name, 
                   "price": document.getElementById("price").value,
                   "product_category": document.getElementById("category").value,
                   "product_type": document.getElementById("type").value,
@@ -165,7 +184,7 @@
       } else {
 
         purchaseList[index] = { 
-          "product_name": document.getElementById("product_name").value, 
+          "product_name": product_name, 
           "price": document.getElementById("price").value,
           "product_category": document.getElementById("category").value,
           "product_type": document.getElementById("type").value,
@@ -175,7 +194,7 @@
         }
       }
       document.getElementById("price").value = 0;
-      document.getElementById("quantity").value = 1;
+      document.getElementById("quantity").value = 0;
       document.getElementById("total_amount").value = 0;
       document.getElementById("index").value = "";
 
@@ -213,8 +232,11 @@
   };
 
   function editPurchase(index) {
-    console.log(purchaseList[index].product_name);
-    document.getElementById("product_name").value = purchaseList[index].product_name;
+    var edit_name = purchaseList[index].product_name;
+    var edit_category = purchaseList[index].product_category;
+    var edit_type = purchaseList[index].product_type;
+    
+    document.getElementById("product_name").value = edit_name + "," + edit_category + "," + edit_type;
     document.getElementById("price").value = purchaseList[index].price;
     document.getElementById("category").value = purchaseList[index].product_category;
     document.getElementById("type").value = purchaseList[index].product_type;

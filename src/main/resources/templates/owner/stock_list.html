@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" 
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+<title>Stock List</title>
+<style>
+  body {
+    background-image: url('/images/whisky2.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;  
+    background-size: 50%;
+  }
+</style>
+</head>
+<body class="body">
+    <div class="topnav">
+      <div class="d-flex justify-content-between">
+        <div>
+          <a href='/liquorshop/owner-homepage'>Liquor Shop Management</a>
+          <a href='#'>[[${login_user}]]</a>
+        </div>
+        <div>
+          <a href='/logout'>LogOut</a>
+        </div>
+      </div>
+    </div><br>
+    <div class="container pt-5">
+        <div class = "row">
+            <h3>Stock List</h3>
+        </div>
+        <table class="table table-striped table-bordered table-bg">
+        <thead class="table-dark">
+        <tr>
+            <th>Product Name</th>
+            <th>stock</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr th:each="stock : ${stocks}">
+              <td>[[${stock.product.product_name}]]</td>
+              <td>[[${stock.stock}]]</td>
+            </tr>
+        </tbody>
+        </table>
+        <div class="row">
+          <div>
+            <a th:href="@{/liquorshop/owner-homepage}" class="btn btn-dark btn-sm mn-3">Back</a>
+          </div>
+        </div>
+    </div>
+</html>

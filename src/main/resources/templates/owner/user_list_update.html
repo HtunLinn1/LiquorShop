@@ -7,8 +7,16 @@
     href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <link rel="stylesheet" th:href="@{/css/style.css}">
 <title>User Update</title>
+<style>
+  body {
+    background-image: url('/images/whisky2.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;  
+    background-size: 30%;
+  }
+</style>
 </head>
-<body>
+<body class="body">
   <div class="topnav">
     <div class="d-flex justify-content-between">
       <div>
@@ -22,7 +30,7 @@
   </div><br>
   <div class="container detail-update-left pt-5">
     <div class="col-lg-10 card-header">
-      <h3>Product Update</h3>
+      <h3>User Update</h3>
       <form th:method="patch" th:action="@{/liquorshop/owner-homepage/user_list/{id}/edit(id=${appUser.id})}" th:object="${appUser}" novalidate>
         <div>
           <label for="username" th:text="#{user_name}"></label><br>

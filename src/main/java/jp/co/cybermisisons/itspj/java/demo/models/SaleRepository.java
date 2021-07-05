@@ -25,4 +25,7 @@ public interface SaleRepository extends JpaRepository<Sale, Integer> {
   @Modifying(clearAutomatically = true)
   @Query("update Sale set final_total =:final_total where id =:sale_id")
   void updateSaleFinalTotal(@Param("final_total") Integer final_total, @Param("sale_id") Integer sale_id);
+
+  @Query(value = "select sum(final_total) from sale where MONTH(sale_date) = MONTH(:current_date) ", nativeQuery = true)
+  Integer selectWithCurrentDate(@Param("current_date") Date current_date);
 }

@@ -31,6 +31,7 @@ import jp.co.cybermisisons.itspj.java.demo.models.PurchaseDetailRepository;
 import jp.co.cybermisisons.itspj.java.demo.models.PurchaseRepository;
 import jp.co.cybermisisons.itspj.java.demo.models.RemainingStock;
 import jp.co.cybermisisons.itspj.java.demo.models.RemainingStockRepository;
+import jp.co.cybermisisons.itspj.java.demo.models.SaleRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/liquorshop/owner-homepage")
@@ -43,11 +44,23 @@ public class OwnerController {
   private final PurchaseRepository purchaserep;
   private final PurchaseDetailRepository purchasedetailrep;
   private final RemainingStockRepository rsrep;
+  private final SaleRepository salerep;
 
   @GetMapping("")
   public String homepage(Principal principal, Model model) {
     model.addAttribute("user", principal.getName());
     model.addAttribute("rStocks", rsrep.findAllByOrderByStockAsc());
+
+    Date current_date = new Date();
+    Integer purchase_amount = purchaserep.selectWithCurrentDate(current_date);
+
+    Integer sale_amount = salerep.selectWithCurrentDate(current_date);
+    Integer net_amount = sale_amount - purchase_amount;
+
+    model.addAttribute("purchase_amount", purchase_amount);
+    model.addAttribute("sale_amount", sale_amount);
+    model.addAttribute("net_amount", net_amount);
+
     return "owner/index";
   }
 
@@ -360,5 +373,12 @@ public class OwnerController {
 
     attrs.addFlashAttribute("success", "User was successfully updated!");
     return "redirect:/liquorshop/owner-homepage/user_list";
+  }
+
+  @GetMapping("/stock_list")
+  public String stock_list(Principal principal, Model model) {
+    model.addAttribute("user", principal.getName());
+    model.addAttribute("stocks", rsrep.findAll());
+    return "owner/stock_list";
   }
 }
