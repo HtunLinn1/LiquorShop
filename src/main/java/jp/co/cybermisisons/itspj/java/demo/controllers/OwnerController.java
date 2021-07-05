@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import jp.co.cybermisisons.itspj.java.demo.models.AppUser;
 import jp.co.cybermisisons.itspj.java.demo.models.AppUserRepository;
 import jp.co.cybermisisons.itspj.java.demo.models.Product;

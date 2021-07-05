@@ -27,6 +27,7 @@
           <div>
               <label for="product_name" th:text="#{product_name}"></label><br>
               <select name="product_name" id="product_name">
+                <option value="" disabled selected hidden>Choose Product Name</option>
                 <option th:each="product: ${products}" th:value="${product.product_name}" th:text="${product.product_name}" />
               </select>
               <div class="invalid-feedback"

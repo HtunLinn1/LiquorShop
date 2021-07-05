@@ -50,6 +50,6 @@ public class Product {
   private List<SaleDetail> sale_details;
 
   @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
-  private RemainingStock remaining_stocks;
+  private RemainingStock remaining_stock;
 
 }

@@ -24,6 +24,7 @@
     <div class="col-lg-10 card-header">
       <h3>Sale Detail Update</h3>
       <form th:method="patch" th:action="@{/liquorshop/cashier-homepage/sale_history/{sale_id}/detail/{detail_id}/detail_update(sale_id=${sale_id}, detail_id=${detail_id})}" th:object="${saleDetail}" novalidate>
+        <div th:if="${quantityError}" class="alert alert-danger">[[${quantityError}]]<br></div>
         <div>
           <label for="product_name" th:text="#{product_name}"></label><br>
           <select name="product_name" id="product_name" onchange="showProduct()" disabled>
@@ -68,7 +69,8 @@
         </div>
         <div>
           <label for="quantity" th:text="#{quantity}"></label><br>
-          <input type="number" th:field="*{quantity}" class="form-control" th:errorclass="is-invalid" id="quantity" onchange='changeValue();'>
+          <input type="number" th:field="*{quantity}" class="form-control" th:errorclass="is-invalid" id="quantity">
+          Remaining Stock => [[${stock}]]
           <div class="invalid-feedback err-color"
             th:errors="*{quantity}">
           </div>

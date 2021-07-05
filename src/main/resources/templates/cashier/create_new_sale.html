@@ -7,8 +7,16 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" th:href="@{/css/style.css}">
   <title>Create Sale</title>
+  <style>
+    body {
+      background-image: url('/images/whisky2.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;  
+      background-size: 100%;
+    }
+  </style>
   </head>
-  <body>
+  <body class="body">
     <div class="topnav">
       <div class="d-flex justify-content-between">
         <div>
@@ -27,7 +35,8 @@
           <div>
               <label for="product_name" th:text="#{product_name}"></label><br>
               <select name="product_name" id="product_name" onchange="showProduct()" >
-                <option th:each="product: ${products}" th:value="${product.product_category} + ',' + ${product.product_type} + ',' + ${product.price} + ',' + ${product.product_name} + ',' + ${product.id}" th:text="${product.product_name}" />
+                <option value="" disabled selected hidden>Choose Product Name</option>
+                <option th:each="rStock: ${rStocks}" th:value="${rStock.product.product_category} + ',' + ${rStock.product.product_type} + ',' + ${rStock.product.price} + ',' + ${rStock.product.product_name} + ',' + ${rStock.product.id} + ',' + ${rStock.stock}" th:text="${rStock.product.product_name}" />
               </select>
           </div>
 
@@ -62,11 +71,9 @@
           <div>
             <label for="quantity" th:text="#{quantity}"></label><br>
             <input type="number" th:field="*{quantity}" class="form-control" th:errorclass="is-invalid" placeholder="quantity" id="quantity" onchange='changeValue();'>
+            <label>Stock : </label><input type="number" id="stock" disabled>
             <div class="invalid-feedback"
               th:errors="*{quantity}">
-            </div>
-            <div>
-              In Stock: [[${rStock.stock}]]
             </div>
           </div>
 
@@ -141,23 +148,8 @@
     document.getElementById("type").value = testArr[1];
     document.getElementById("price").value = testArr[2];
     document.getElementById("product_id").value = testArr[4];
+    document.getElementById("stock").value = testArr[5];
 
-    var productObj = {};
-    productObj.id = testArr[4];
-    productObj.product_name = testArr[3];
-    console.log(productObj);
-    $.ajax({
-      contentType: "application/json; charset=utf-8",
-      type: "GET",
-      url: "createNewSaleWithProductId", 
-      dataType:"json",
-      data: JSON.stringify(productObj),
-      success: function (result) {
-      },
-      error: function (result) {
-          // do something.
-      }
-  });
   };
 
   function changeValue() {
@@ -177,12 +169,21 @@
 
     var index = document.getElementById("index").value;
 
+    var stock =document.getElementById("stock").value;
+    var quantity = document.getElementById("quantity").value;
+    var price = document.getElementById("price").value;
+
     var testArr = document.getElementById("product_name").value.split(',');
     var product_name = testArr[3];
     document.getElementById("final_total_amount").value = finalTotal;
 
-    if (document.getElementById("quantity").value > 0 && document.getElementById("price").value > -1) {
-
+    if (parseInt(quantity) > parseInt(stock)) {
+      console.log(stock);
+      console.log(quantity);
+      alert("quantity is greater than current stock");
+    } else if(parseInt(quantity) <= 0 || parseInt(price) < 0 || quantity === "" ) {
+      alert("Enter quantity that is greater than 0 and price that is greater than -1!");
+    } else {
       if (index === "") {
         purchaseList.push({
                   "product_name": product_name, 
@@ -192,7 +193,8 @@
                   "quantity": document.getElementById("quantity").value,
                   "total_amount": document.getElementById("total_amount").value,
                   "final_total": document.getElementById("final_total_amount").value,
-                  "id": document.getElementById("product_id").value
+                  "id": document.getElementById("product_id").value,
+                  "stock" : document.getElementById("stock").value
                   });
         
       } else {
@@ -205,7 +207,8 @@
           "quantity": document.getElementById("quantity").value,
           "total_amount": document.getElementById("total_amount").value,
           "final_total": document.getElementById("final_total_amount").value,
-          "id": document.getElementById("product_id").value
+          "id": document.getElementById("product_id").value,
+          "stock" : document.getElementById("stock").value
         }
       }
       document.getElementById("price").value = 0;
@@ -219,9 +222,8 @@
       });
       $('.purchaseTable tbody').html(bodyString);
 
-    } else {
-      alert("Enter quantity that is greater than 0 and price that is greater than -1!");
     }
+
     finalTotal = 0;
     purchaseList.forEach(function(element) {
       finalTotal = finalTotal + parseInt(element.total_amount);
@@ -253,8 +255,9 @@
     var edit_quantity = purchaseList[index].quantity;
     var edit_totalAmout = purchaseList[index].total_amount;
     var product_id = purchaseList[index].product_id;
+    var stock = purchaseList[index].stock;
 
-    document.getElementById("product_name").value = edit_category + "," + edit_type + "," + edit_price + "," + edit_name + "," + product_id;
+    document.getElementById("product_name").value = edit_category + "," + edit_type + "," + edit_price + "," + edit_name + "," + product_id + "," + stock;
     document.getElementById("price").value = edit_price;
     document.getElementById("category").value = edit_category;
     document.getElementById("type").value = edit_type;
