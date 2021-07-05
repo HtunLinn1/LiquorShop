@@ -146,8 +146,10 @@ public class CashierController {
 
     saledetailtrep.deleteById(detail_id);
 
-    if (saledetailtrep.findAll().size() == 0) {
+    if (saledetailtrep.findBySale(salerep.findById(sale_id)).size() == 0) {
       salerep.deleteById(sale_id);
+      attrs.addFlashAttribute("success", "Successfully deleted!");
+      return "redirect:/liquorshop/cashier-homepage/sale_history_list";
     }
 
     attrs.addFlashAttribute("success", "Successfully deleted!");

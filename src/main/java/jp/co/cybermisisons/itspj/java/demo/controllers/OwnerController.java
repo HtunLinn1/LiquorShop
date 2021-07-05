@@ -136,11 +136,18 @@ public class OwnerController {
   @DeleteMapping("/purchase_history/{id}/delete")
   public String delete(@PathVariable int id, RedirectAttributes attrs) {
     List<PurchaseDetail> del_purchaseDetails = purchasedetailrep.findByPurchase(purchaserep.findById(id));
-    System.out.println(del_purchaseDetails);
+
     for (int i = 0; i < del_purchaseDetails.size(); i++) {
-      Integer quantity = del_purchaseDetails.get(i).getQuantity();
-      Integer product_id = productrep.findProduct(del_purchaseDetails.get(i).getProduct_name()).getId();
-      rsrep.updateMinusStockQuantity(quantity, product_id);
+      String product_name = del_purchaseDetails.get(i).getProduct_name();
+      if (del_purchaseDetails.get(i).getQuantity() <= productrep.findProduct(product_name).getRemaining_stock()
+          .getStock()) {
+        Integer quantity = del_purchaseDetails.get(i).getQuantity();
+        Integer product_id = productrep.findProduct(del_purchaseDetails.get(i).getProduct_name()).getId();
+        rsrep.updateMinusStockQuantity(quantity, product_id);
+      } else {
+        attrs.addFlashAttribute("quantityError", "Quantity of " + product_name + " is greater than remaining stock!");
+        return "redirect:/liquorshop/owner-homepage/purchase_history_list";
+      }
     }
     purchaserep.deleteById(id);
     attrs.addFlashAttribute("success", "Successfully deleted!");
@@ -161,8 +168,19 @@ public class OwnerController {
     String product_name = purchasedetailrep.findById(detail_id).get().getProduct_name();
     Integer quantity = purchasedetailrep.findById(detail_id).get().getQuantity();
     Integer product_id = productrep.findProduct(product_name).getId();
-    rsrep.updateMinusStockQuantity(quantity, product_id);
-    purchasedetailrep.deleteById(detail_id);
+    if (quantity <= productrep.findProduct(product_name).getRemaining_stock().getStock()) {
+      rsrep.updateMinusStockQuantity(quantity, product_id);
+      purchasedetailrep.deleteById(detail_id);
+    } else {
+      attrs.addFlashAttribute("quantityError", "Quantity is greater than remaining stock!");
+      return "redirect:/liquorshop/owner-homepage/purchase_history/" + purchase_id + "/detail";
+    }
+
+    if (purchasedetailrep.findByPurchase(purchaserep.findById(purchase_id)).size() == 0) {
+      purchaserep.deleteById(purchase_id);
+      return "redirect:/liquorshop/owner-homepage/purchase_history_list";
+    }
+
     attrs.addFlashAttribute("success", "Successfully deleted!");
     return "redirect:/liquorshop/owner-homepage/purchase_history/" + purchase_id + "/detail";
   }
@@ -175,6 +193,9 @@ public class OwnerController {
     model.addAttribute("purchase_id", purchase_id);
 
     model.addAttribute("products", productrep.findAll());
+
+    String product_name = purchasedetailrep.findById(detail_id).get().getProduct_name();
+    model.addAttribute("stock", productrep.findProduct(product_name).getRemaining_stock().getStock());
     model.addAttribute("purchaseDetail", purchasedetailrep.findById(detail_id).get());
     return "owner/purchase_detail_update";
   }
@@ -184,17 +205,46 @@ public class OwnerController {
       @Validated @ModelAttribute PurchaseDetail purchaseDetail, BindingResult result, Model model) {
     if (result.hasErrors()) {
       model.addAttribute("products", productrep.findAll());
-      return "owner/purchase_detail_update";
+      attrs.addFlashAttribute("quantityError", "Insert quantity that is greater than 0!");
+      return "redirect:/liquorshop/owner-homepage/purchase_history/" + purchase_id + "/detail/" + detail_id + "/update";
     }
-    purchaseDetail.setId(detail_id);
-    purchasedetailrep.save(purchaseDetail);
 
     String product_name = purchaseDetail.getProduct_name().split(",")[0];
+    Integer quantity = purchasedetailrep.findById(detail_id).get().getQuantity();
+    Integer edit_quantity = purchaseDetail.getQuantity();
+    Integer stock = productrep.findProduct(product_name).getRemaining_stock().getStock();
 
-    PurchaseDetail puchase_detail = purchasedetailrep.findById(detail_id).get();
+    if (purchaseDetail.getQuantity() >= quantity) {
+      purchaseDetail.setId(detail_id);
+      purchasedetailrep.save(purchaseDetail);
 
-    Integer total_amount = puchase_detail.getPrice() * puchase_detail.getQuantity();
-    purchasedetailrep.updatePurchaseDetailAmount(product_name, total_amount, detail_id);
+      PurchaseDetail puchase_detail = purchasedetailrep.findById(detail_id).get();
+
+      Integer total_amount = puchase_detail.getPrice() * puchase_detail.getQuantity();
+      purchasedetailrep.updatePurchaseDetailAmount(product_name, total_amount, detail_id);
+
+      Integer net_quantity = edit_quantity - quantity;
+      Integer product_id = productrep.findProduct(product_name).getId();
+      rsrep.updateAddStockQuantity(net_quantity, product_id);
+    } else {
+      Integer net_quantity = quantity - purchaseDetail.getQuantity();
+      if (net_quantity <= stock) {
+        purchaseDetail.setId(detail_id);
+        purchasedetailrep.save(purchaseDetail);
+
+        PurchaseDetail puchase_detail = purchasedetailrep.findById(detail_id).get();
+
+        Integer total_amount = puchase_detail.getPrice() * puchase_detail.getQuantity();
+        purchasedetailrep.updatePurchaseDetailAmount(product_name, total_amount, detail_id);
+
+        Integer product_id = productrep.findProduct(product_name).getId();
+        rsrep.updateMinusStockQuantity(net_quantity, product_id);
+      } else {
+        attrs.addFlashAttribute("quantityError", "Remaining Stock is not enough!");
+        return "redirect:/liquorshop/owner-homepage/purchase_history/" + purchase_id + "/detail/" + detail_id
+            + "/update";
+      }
+    }
 
     attrs.addFlashAttribute("success", "Purchase detail was successfully updated!");
     return "redirect:/liquorshop/owner-homepage/purchase_history/" + purchase_id + "/detail";
