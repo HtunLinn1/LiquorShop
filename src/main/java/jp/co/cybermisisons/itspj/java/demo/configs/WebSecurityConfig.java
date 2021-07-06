@@ -24,7 +24,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
         // [login]だけを許可
-        .antMatchers("/liquorshop").permitAll()
+        .antMatchers("/liquorshop").permitAll() //
+        .antMatchers("/h2-console/**").permitAll()
         // その他のパスにはすべて認証が必要
         .anyRequest().authenticated().and()
         // フォーム認証
@@ -37,6 +38,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .invalidateHttpSession(true);
     // ajax data
     http.cors().and().csrf().disable();
+    http.csrf().disable();
+    http.headers().frameOptions().disable();
     // http.cors().and().csrf().disable();
 
   }

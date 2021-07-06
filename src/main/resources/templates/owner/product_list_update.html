@@ -35,7 +35,7 @@
         <div>
           <label for="product_name" th:text="#{product_name}"></label><br>
           <select name="product_name" id="product_name">
-            <option th:each="product: ${products}" th:value="${product.product_name}" th:text="${product.product_name}" th:selected="${product.product_name==product.product_name}" />
+            <option th:each="product_sel: ${products}" th:value="${product_sel.product_name}" th:text="${product_sel.product_name}" th:selected="${product_sel.product_name==product.product_name}" />
           </select>
           <div class="invalid-feedback"
             th:errors="*{product_name}">

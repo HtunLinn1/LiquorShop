@@ -58,9 +58,9 @@
       <div class="pt-5">
         <div class="table-bg pt-3 pb-5 pl-3 pr-3">
           <b>Current Month</b><br><br>
-          <b>Sale : </b>[[${sale_amount}]]<br>
-          <b>Purchase : </b>[[${purchase_amount}]]<br>
-          <b>Net Amount : </b><span th:if="${net_amount} > 0" class="profit-color">[[${net_amount}]]</span> <span th:unless="${net_amount} > 0" class="loss-color">[[${net_amount}]]</span>
+          <b>Sale : </b>[[${sale_amount}]]円<br>
+          <b>Purchase : </b>[[${purchase_amount}]]円<br>
+          <b>Net Amount : </b><span th:if="${net_amount} > 0" class="profit-color"><b>[[${net_amount}]]</b>円</span> <span th:unless="${net_amount} > 0" class="loss-color"><b>[[${net_amount}]]</b>円</span>
         </div>
       </div>
     </div>
